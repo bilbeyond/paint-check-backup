@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>涂布表面均匀性识别系统</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<header class="header">
+  <div class="header-inner">
+    <div class="logo">
+      <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 11H5m14 0a2 2 0 0 1 2 2v0a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v0a2 2 0 0 1 2-2m14 0V9a2 2 0 0 0-2-2M5 11V9a2 2 0 0 1 2-2m0 0V5a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v2M7 7h10"/><circle cx="12" cy="19" r="2"/></svg>
+    </div>
+    <div>
+      <h1>涂布表面均匀性识别系统</h1>
+      <p class="subtitle">拖拽上传涂层照片 · 自动分析 · 百分比评分 + 五星评价</p>
+    </div>
+  </div>
+</header>
+
+<main class="main">
+  <!-- 上传区 -->
+  <section id="dropzone" class="dropzone" tabindex="0" aria-label="拖拽或点击上传图片">
+    <input type="file" id="fileInput" accept="image/jpeg,image/png,image/webp" multiple hidden>
+    <svg class="dz-icon" viewBox="0 0 24 24" width="56" height="56" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+    <p class="dz-title">将图片拖拽到此处，或点击选择文件</p>
+    <p class="dz-hint">支持 JPG / PNG / WebP，可一次上传多张，上传后自动开始分析</p>
+  </section>
+
+  <!-- 分析状态 -->
+  <div id="statusBar" class="status-bar" hidden>
+    <div class="spinner"></div>
+    <span id="statusText">正在分析图片…</span>
+  </div>
+
+  <!-- 结果列表 -->
+  <section id="results" class="results"></section>
+
+  <footer class="footer">
+    <p>评分算法基于标注样本校准（合规 ≥ 90 分，不合规 &lt; 60 分）· 纯本地分析，图片不会上传到任何服务器</p>
+    <button id="clearBtn" class="btn-ghost" type="button">清空结果</button>
+  </footer>
+</main>
+
+<template id="cardTemplate">
+  <article class="result-card">
+    <button class="card-del" type="button" title="删除此记录" aria-label="删除此记录">
+      <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+    <div class="card-image">
+      <img alt="上传的涂层图片">
+      <span class="badge"></span>
+    </div>
+    <div class="card-body">
+      <div class="score-row">
+        <div class="score-circle">
+          <svg viewBox="0 0 120 120">
+            <circle class="ring-bg" cx="60" cy="60" r="52"/>
+            <circle class="ring-fg" cx="60" cy="60" r="52"/>
+          </svg>
+          <div class="score-num"><span class="score-value">0</span><span class="score-unit">%</span></div>
+        </div>
+        <div class="score-meta">
+          <div class="stars" aria-label="星级评价"></div>
+          <p class="verdict-text"></p>
+          <p class="file-name"></p>
+        </div>
+      </div>
+      <div class="metrics">
+        <div class="metric">
+          <span class="metric-label">色泽一致性</span>
+          <div class="metric-bar"><div class="metric-fill metric-color"></div></div>
+          <span class="metric-value"></span>
+        </div>
+        <div class="metric">
+          <span class="metric-label">表面纹路均匀性</span>
+          <div class="metric-bar"><div class="metric-fill metric-tex"></div></div>
+          <span class="metric-value"></span>
+        </div>
+        <div class="metric">
+          <span class="metric-label">气泡</span>
+          <div class="metric-bar"><div class="metric-fill metric-bubble"></div></div>
+          <span class="metric-value"></span>
+        </div>
+        <div class="metric">
+          <span class="metric-label">裂纹</span>
+          <div class="metric-bar"><div class="metric-fill metric-crack"></div></div>
+          <span class="metric-value"></span>
+        </div>
+      </div>
+    </div>
+  </article>
+</template>
+
+<script src="js/analyze.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
