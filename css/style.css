@@ -1,0 +1,186 @@
+/* 颜料涂抹合规性识别系统 - 浅色主题 */
+:root {
+  --bg: #f5f7fa;
+  --card-bg: #ffffff;
+  --border: #e2e8f0;
+  --text: #1a202c;
+  --text-2: #64748b;
+  --primary: #2563eb;
+  --primary-dark: #1d4ed8;
+  --ok: #16a34a;        /* 合规=绿（交通灯语义） */
+  --ok-bg: #f0fdf4;
+  --bad: #dc2626;       /* 不合规=红 */
+  --bad-bg: #fef2f2;
+  --warn: #d97706;
+  --star: #f59e0b;
+  --shadow: 0 1px 3px rgba(0,0,0,.08), 0 4px 12px rgba(0,0,0,.06);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+[hidden] { display: none !important; }
+
+body {
+  font-family: "PingFang SC", "Microsoft YaHei", "Segoe UI", sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+}
+
+/* ---------- 头部 ---------- */
+.header {
+  background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 60%, #3b82f6 100%);
+  color: #fff;
+  padding: 28px 16px;
+}
+.header-inner {
+  max-width: 960px; margin: 0 auto;
+  display: flex; align-items: center; gap: 14px;
+}
+.logo { display: flex; }
+.subtitle { font-size: 13px; opacity: .85; margin-top: 4px; }
+h1 { font-size: 22px; font-weight: 600; }
+
+.main { max-width: 960px; margin: 0 auto; padding: 24px 16px 40px; }
+
+/* ---------- 上传区 ---------- */
+.dropzone {
+  background: var(--card-bg);
+  border: 2px dashed var(--border);
+  border-radius: 16px;
+  padding: 48px 24px;
+  text-align: center;
+  cursor: pointer;
+  transition: all .2s ease;
+  outline: none;
+}
+.dropzone:hover, .dropzone:focus {
+  border-color: var(--primary);
+  background: #f0f6ff;
+}
+.dropzone.dragover {
+  border-color: var(--primary);
+  background: #e8f0fe;
+  transform: scale(1.01);
+  box-shadow: var(--shadow);
+}
+.dz-icon { color: var(--primary); margin-bottom: 12px; }
+.dz-title { font-size: 16px; font-weight: 600; color: var(--text); }
+.dz-hint { font-size: 13px; color: var(--text-2); margin-top: 6px; }
+
+/* ---------- 状态栏 ---------- */
+.status-bar {
+  display: flex; align-items: center; gap: 10px;
+  margin-top: 16px; padding: 12px 18px;
+  background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 10px;
+  color: var(--primary-dark); font-size: 14px;
+}
+.spinner {
+  width: 16px; height: 16px;
+  border: 2px solid #bfdbfe; border-top-color: var(--primary);
+  border-radius: 50%; animation: spin .8s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ---------- 结果卡片 ---------- */
+.results { margin-top: 20px; display: flex; flex-direction: column; gap: 16px; }
+.result-card {
+  position: relative;
+  display: flex; gap: 0;
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: var(--shadow);
+  animation: cardIn .35s ease both;
+  transition: opacity .25s ease, transform .25s ease;
+}
+.result-card.removing { opacity: 0; transform: translateX(24px); }
+
+.card-del {
+  position: absolute; top: 10px; right: 10px; z-index: 2;
+  width: 28px; height: 28px;
+  display: flex; align-items: center; justify-content: center;
+  border: none; border-radius: 50%;
+  background: rgba(255,255,255,.92);
+  color: #475569;
+  cursor: pointer;
+  box-shadow: 0 1px 4px rgba(0,0,0,.18);
+  transition: all .18s ease;
+}
+.card-del:hover { background: var(--bad); color: #fff; transform: scale(1.08); }
+@keyframes cardIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
+
+.card-image { position: relative; width: 220px; flex-shrink: 0; background: #f1f5f9; }
+.card-image img { width: 100%; height: 100%; object-fit: cover; display: block; min-height: 180px; }
+.badge {
+  position: absolute; top: 10px; left: 10px;
+  padding: 4px 12px; border-radius: 999px;
+  font-size: 12px; font-weight: 600; color: #fff;
+  background: var(--warn);
+}
+.badge.ok { background: var(--ok); }
+.badge.bad { background: var(--bad); }
+
+.card-body { flex: 1; padding: 18px 22px; min-width: 0; }
+.score-row { display: flex; align-items: center; gap: 20px; }
+
+.score-circle { position: relative; width: 104px; height: 104px; flex-shrink: 0; }
+.score-circle svg { width: 100%; height: 100%; transform: rotate(-90deg); }
+.ring-bg { fill: none; stroke: #eef2f7; stroke-width: 10; }
+.ring-fg {
+  fill: none; stroke: var(--ring-color, var(--ok)); stroke-width: 10;
+  stroke-linecap: round;
+  stroke-dasharray: 326.7;
+  stroke-dashoffset: 326.7;
+  transition: stroke-dashoffset 1s cubic-bezier(.2,.8,.3,1), stroke .3s;
+}
+.score-num {
+  position: absolute; inset: 0;
+  display: flex; align-items: center; justify-content: center;
+}
+.score-value { font-size: 30px; font-weight: 700; color: var(--ring-color, var(--ok)); }
+.score-unit { font-size: 14px; font-weight: 600; color: var(--text-2); margin-left: 2px; }
+
+.score-meta { min-width: 0; }
+.stars { display: flex; gap: 3px; height: 26px; }
+.stars .star { width: 24px; height: 24px; position: relative; }
+.stars .star svg { width: 100%; height: 100%; }
+.verdict-text { font-size: 15px; font-weight: 600; margin-top: 6px; }
+.verdict-text.ok { color: var(--ok); }
+.verdict-text.bad { color: var(--bad); }
+.file-name { font-size: 12px; color: var(--text-2); margin-top: 4px; max-width: 320px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+.metrics { margin-top: 16px; display: flex; flex-direction: column; gap: 10px; }
+.metric { display: flex; align-items: center; gap: 12px; font-size: 13px; }
+.metric-label { width: 84px; color: var(--text-2); flex-shrink: 0; }
+.metric-bar {
+  flex: 1; height: 8px; background: #eef2f7; border-radius: 999px; overflow: hidden;
+}
+.metric-fill {
+  height: 100%; width: 0; border-radius: 999px;
+  transition: width 1s cubic-bezier(.2,.8,.3,1);
+}
+.metric-color { background: linear-gradient(90deg, #60a5fa, #2563eb); }
+.metric-tex { background: linear-gradient(90deg, #34d399, #059669); }
+.metric-value { width: 40px; text-align: right; font-weight: 600; color: var(--text); }
+
+/* ---------- 底部 ---------- */
+.footer {
+  margin-top: 32px; text-align: center;
+  font-size: 12px; color: var(--text-2);
+  display: flex; flex-direction: column; gap: 10px; align-items: center;
+}
+.btn-ghost {
+  background: none; border: 1px solid var(--border); color: var(--text-2);
+  padding: 6px 16px; border-radius: 8px; cursor: pointer; font-size: 13px;
+  transition: all .2s;
+}
+.btn-ghost:hover { border-color: var(--primary); color: var(--primary); }
+
+@media (max-width: 640px) {
+  .result-card { flex-direction: column; }
+  .card-image { width: 100%; height: 200px; }
+  .score-row { flex-direction: column; text-align: center; }
+  .stars { justify-content: center; }
+}
